@@ -33,6 +33,7 @@ import static org.codelibs.elasticsearch.runner.ElasticsearchClusterRunner.newCo
 
 /**
  * Create by guanquan.wang at 2019-09-18 16:55
+ * https://github.com/codelibs/elasticsearch-cluster-runner/blob/master/src/test/java/org/codelibs/elasticsearch/runner/ElasticsearchClusterRunnerTest.java
  */
 public class DynamicSynonymPluginTest {
     private ElasticsearchClusterRunner runner;

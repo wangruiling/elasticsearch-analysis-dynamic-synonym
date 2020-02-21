@@ -26,7 +26,7 @@ master| 7.x -> master
 
 ```json
 {
-	"index" : {
+	"settings" : {
 	    "analysis" : {
 	        "analyzer" : {
 	            "synonym" : {
@@ -48,7 +48,58 @@ master| 7.x -> master
 	    }
 	}
 }
+
 ```
+```
+PUT dynamic_syno_index
+{
+  "settings": {
+    "number_of_shards": 2,
+    "number_of_replicas": 0,
+    "analysis": {
+      "analyzer": {
+        "ik_max_dynamic_syno": {
+          "type": "custom",
+          "tokenizer": "ik_max_word",
+          "filter": [
+            "remote_synonym"
+          ]
+        },
+        "ik_smart_dynamic_syno": {
+          "type": "custom",
+          "tokenizer": "ik_smart",
+          "filter": [
+            "remote_synonym"
+          ]
+        }
+      },
+      "filter": {
+        "remote_synonym": {
+          "type": "dynamic_synonym",
+          "synonyms_path": "http://127.0.0.1:80/synonym.dic"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "ik_smart",
+        "search_analyzer": "ik_smart"
+      }
+    }
+  }
+}
+
+
+POST dynamic_syno_index/_analyze
+{
+  "analyzer": "ik_smart_dynamic_syno",
+  "text":     "meiguo"
+}
+```
+
 ### Configuration
 
 `synonyms_path`: A file path relative to the Elastic config file or an URL, *mandatory*

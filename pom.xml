@@ -4,15 +4,15 @@
 
     <groupId>com.bellszhu.elasticsearch</groupId>
     <artifactId>elasticsearch-analysis-dynamic-synonym</artifactId>
-    <version>7.3.1</version>
+    <version>${elasticsearch.version}</version>
     <packaging>jar</packaging>
     <name>elasticsearch-dynamic-synonym</name>
     <description>Analysis-plugin for synonym</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <elasticsearch.version>${project.version}</elasticsearch.version>
-        <maven.compiler.target>12</maven.compiler.target>
+        <elasticsearch.version>7.6.0</elasticsearch.version>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <elasticsearch.plugin.name>analysis-dynamic-synonym</elasticsearch.plugin.name>
         <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin.xml
         </elasticsearch.assembly.descriptor>
@@ -51,30 +51,30 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.4.1</version>
+            <version>4.5.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.7</version>
+            <version>2.13.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.7</version>
+            <version>2.13.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.codelibs</groupId>
             <artifactId>elasticsearch-cluster-runner</artifactId>
-            <version>${project.version}.0</version>
+            <version>${elasticsearch.version}.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

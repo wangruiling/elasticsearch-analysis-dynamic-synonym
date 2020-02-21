@@ -73,6 +73,7 @@ public class LocalSynonymFile implements SynonymFile {
 
     }
 
+    @Override
     public Reader getReader() {
         /*
         Just deleted when reading the file, Returns empty synonym

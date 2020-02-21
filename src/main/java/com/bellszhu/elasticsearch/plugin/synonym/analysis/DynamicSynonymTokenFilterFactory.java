@@ -103,6 +103,7 @@ public class DynamicSynonymTokenFilterFactory extends
         throw new IllegalStateException("Call getChainAwareTokenFilterFactory to specialize this factory for an analysis chain first");
     }
 
+    @Override
     public TokenFilterFactory getChainAwareTokenFilterFactory(TokenizerFactory tokenizer, List<CharFilterFactory> charFilters,
                                                               List<TokenFilterFactory> previousTokenFilters,
                                                               Function<String, TokenFilterFactory> allFilters) {
@@ -144,7 +145,8 @@ public class DynamicSynonymTokenFilterFactory extends
 
     Analyzer buildSynonymAnalyzer(TokenizerFactory tokenizer, List<CharFilterFactory> charFilters,
                                   List<TokenFilterFactory> tokenFilters, Function<String, TokenFilterFactory> allFilters) {
-        return new CustomAnalyzer("dynamic_synonym", tokenizer, charFilters.toArray(new CharFilterFactory[0]),
+        //从elasticsearch7.4.0开始，因为CustomAnalyzer 的构造函数变了, 因此去掉了第一个 String 参数即可完成编译,
+        return new CustomAnalyzer(tokenizer, charFilters.toArray(new CharFilterFactory[0]),
             tokenFilters.stream()
                 .map(TokenFilterFactory::getSynonymFilter)
                 .toArray(TokenFilterFactory[]::new));
