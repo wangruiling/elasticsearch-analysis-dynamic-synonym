@@ -1,25 +1,26 @@
 {
   "settings": {
     "number_of_shards": 2,
+    "number_of_replicas": 0,
     "analysis": {
       "analyzer": {
         "ik_max_dynamic_syno": {
           "type": "custom",
           "tokenizer": "ik_max_word",
           "filter": [
-            "dynamic_synonym"
+            "remote_synonym"
           ]
         },
         "ik_smart_dynamic_syno": {
           "type": "custom",
           "tokenizer": "ik_smart",
           "filter": [
-            "dynamic_synonym"
+            "remote_synonym"
           ]
         }
       },
       "filter": {
-        "dynamic_synonym": {
+        "remote_synonym": {
           "type": "dynamic_synonym",
           "synonyms_path": "http://127.0.0.1:80/synonym.txt"
         }

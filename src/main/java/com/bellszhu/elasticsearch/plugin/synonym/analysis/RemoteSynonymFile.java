@@ -3,6 +3,8 @@
  */
 package com.bellszhu.elasticsearch.plugin.synonym.analysis;
 
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -26,6 +28,7 @@ import java.io.StringReader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.text.ParseException;
+import java.util.Objects;
 
 /**
  * @author bellszhu
@@ -121,45 +124,52 @@ public class RemoteSynonymFile implements SynonymFile {
     /**
      * Download custom terms from a remote server
      */
+    @Override
     public Reader getReader() {
-        Reader reader;
+        Reader reader = new StringReader("");
         RequestConfig rc = RequestConfig.custom()
                 .setConnectionRequestTimeout(10 * 1000)
                 .setConnectTimeout(10 * 1000).setSocketTimeout(60 * 1000)
                 .build();
-        CloseableHttpResponse response;
         BufferedReader br = null;
         HttpGet get = new HttpGet(location);
         get.setConfig(rc);
-        try {
-            response = executeHttpRequest(get);
-            if (response.getStatusLine().getStatusCode() == 200) {
+        try (CloseableHttpResponse response = executeHttpRequest(get)) {
+            if (Objects.nonNull(response) && response.getStatusLine().getStatusCode() == 200) {
                 String charset = "UTF-8"; // 获取编码，默认为utf-8
-                if (response.getEntity().getContentType().getValue()
-                        .contains("charset=")) {
-                    String contentType = response.getEntity().getContentType()
-                            .getValue();
-                    charset = contentType.substring(contentType
-                            .lastIndexOf('=') + 1);
-                }
+                HttpEntity entity = response.getEntity();
+                if (Objects.nonNull(entity)) {
+                    Header contentType = entity.getContentType();
+                    if(contentType != null && contentType.getValue() != null){
+                        String typeValue = contentType.getValue();
+                        if(typeValue!=null&&typeValue.contains("charset=")){
+                            charset = typeValue.substring(typeValue.lastIndexOf("=") + 1);
+                        }
+                    }
 
-                br = new BufferedReader(new InputStreamReader(response
-                        .getEntity().getContent(), charset));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    logger.info("reload remote synonym: {}", line);
-                    sb.append(line)
-                            .append(System.getProperty("line.separator"));
+                    if (entity.getContentLength() > 0) {
+                        br = new BufferedReader(new InputStreamReader(entity.getContent(), charset));
+                        StringBuilder sb = new StringBuilder();
+                        String line = br.readLine();
+                        if (line != null) {
+                            if (line.startsWith("\uFEFF")) {
+                                line = line.substring(1);
+                            }
+                            for (; line != null; line = br.readLine()) {
+                                logger.info("reload remote synonym: {}", line);
+                                line = line.trim();
+                                if (line.isEmpty()) {
+                                    continue;
+                                }
+                                sb.append(line).append(System.getProperty("line.separator"));
+                            }
+                            reader = new StringReader(sb.toString());
+                        }
+                    }
                 }
-                reader = new StringReader(sb.toString());
-            } else reader = new StringReader("");
+            }
         } catch (Exception e) {
             logger.error("get remote synonym reader {} error!", location, e);
-//            throw new IllegalArgumentException(
-//                    "Exception while reading remote synonyms file", e);
-            // Fix #54 Returns blank if synonym file has be deleted.
-            reader = new StringReader("");
         } finally {
             try {
                 if (br != null) {

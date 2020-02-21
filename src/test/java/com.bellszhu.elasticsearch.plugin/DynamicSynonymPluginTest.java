@@ -102,7 +102,7 @@ public class DynamicSynonymPluginTest {
             "      \"filter\":{\n" +
             "        \"remote_synonym\": {\n" +
             "            \"type\": \"dynamic_synonym\",\n" +
-            "            \"synonyms_path\": \"http://localhost:8080/api/synonym\",\n" +
+            "            \"synonyms_path\": \"http://localhost:80/synonym.dic\",\n" +
             "            \"interval\": \"10\"\n" +
             "        }"+
             "      },\n" +
